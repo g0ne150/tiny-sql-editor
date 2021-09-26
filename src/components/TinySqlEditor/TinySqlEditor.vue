@@ -2,11 +2,12 @@
 import Editor from "./Editor/Editor.vue";
 import ResultTable from "./ResultTable/ResultTable.vue";
 
+const props = defineProps<{ sql?: string }>()
 
 </script>
 
 <template>
-    <Editor />
+    <Editor :sql="props.sql" />
     <ResultTable />
 </template>
 
