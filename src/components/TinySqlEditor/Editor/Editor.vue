@@ -1,39 +1,26 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
+import Line from "./Line.vue";
+import Cursor from "./Cursor.vue";
 
 
-const props = defineProps<{ sql?: string }>()
+const props = defineProps<{ text?: string }>()
 
-const currentText = ref(props.sql || "")
-const lines = [
-    {
-        text: "select * from xxx;",
-        tokens: [
-            { text: "select", className: "text-blue-700" },
-            { text: " * ", className: "" },
-            { text: "from", className: "text-blue-700" },
-            { text: " xxx", className: "" },
-            { text: ";", className: "" },
-        ]
-    },
-    {
-        text: "select * from xxx;",
-        tokens: [
-            { text: "select", className: "text-blue-700" },
-            { text: " * ", className: "" },
-            { text: "from", className: "text-blue-700" },
-            { text: " xxx", className: "" },
-            { text: ";", className: "" },
-        ]
-    }
-]
+const lines = computed(() => props.text?.split('\n'))
+
 </script>
 
 <template>
     <div class="container mx-auto h-80 overflow-auto">
         <div class="min-h-full cursor-text font-mono">
-            <div class="view-line" v-for="line in lines">
-                <span v-for="token in line.tokens" :class="token.className">{{ token.text }}</span>
+            <div class="relative border">
+                <Line
+                    v-for="(line, index) in lines"
+                    :text="line"
+                    :y-index="index"
+                    @on-change="value => console.log(value)"
+                />
+                <Cursor :x-index="12" :y-index="2" />
             </div>
         </div>
     </div>

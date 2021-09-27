@@ -6,7 +6,11 @@ import TinySqlEditor from "./components/TinySqlEditor/TinySqlEditor.vue";
 </script>
 
 <template>
-    <TinySqlEditor sql="select * from employee;" />
+    <TinySqlEditor text="select * from employee;
+    select * from employee;
+    select * from employee;
+    select * from employee;
+    " />
 </template>
 
 <style>
