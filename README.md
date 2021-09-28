@@ -11,6 +11,12 @@
 ```plantuml
 @startmindmap
 * root
+** Editor
+*** HTML element based
+*** Editing text
+*** Select text
+** Query result table
+*** Display SQL excute result
 ** Syntax Highting
 *** Tokenization
 **** RegExp
@@ -18,8 +24,6 @@
 *** Render
 ** Frontend
 *** vue3+ts
-**** Editor
-**** Query result table
 *** Tailwind CSS
 ** Backend
 *** Execute SQL
