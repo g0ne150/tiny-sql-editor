@@ -89,8 +89,28 @@ const tokenizeComments: (sql: string) => Token[] = (sql: string) => {
     return []
 }
 
+/**
+ * Split origin sql code and reduce by space character
+ *
+ * @param sql Sql code that need to be tokenized
+ * @returns
+ */
 const tokenizeWithoutComments: (sql: string) => Token[] = (sql: string) => {
-    return sql.split(" ").map((word) => {
+    const tokens: string[] = []
+    const chars = [...sql]
+    chars.length &&
+        chars.reduce((tokenTaxt, v) => {
+            const isTextBlank = /^\s*$/.test(tokenTaxt)
+            const isVBlank = v === " "
+            if ((isTextBlank && isVBlank) || (!isTextBlank && !isVBlank)) {
+                return tokenTaxt + v
+            } else {
+                tokens.push(tokenTaxt)
+                return v
+            }
+        })
+
+    return tokens.map((word) => {
         for (const rule of rules) {
             if (rule.match.test(word)) {
                 return {

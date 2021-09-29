@@ -11,6 +11,11 @@ const lines = computed(() => props.text ? props.text.split('\n') : [])
 const curYIndex = ref(0)
 const curXIndex = ref(0)
 
+const onCurserCoordinateChange = (x: number, y: number) => {
+    curXIndex.value = x
+    curYIndex.value = y
+}
+
 </script>
 
 <template>
@@ -22,7 +27,11 @@ const curXIndex = ref(0)
                     :text="line"
                     :y-index="index"
                     @on-change="value => console.log(value)"
+                    @on-cursor-position-change="({ xIndex, yIndex }) => {
+                        onCurserCoordinateChange(xIndex, yIndex)
+                    }"
                 />
+                <!-- FIXME 中文光标定位存在问题 -->
                 <Cursor :x-index="curXIndex" :y-index="curYIndex" />
             </div>
         </div>

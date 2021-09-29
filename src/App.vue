@@ -6,7 +6,8 @@ import TinySqlEditor from "./components/TinySqlEditor/TinySqlEditor.vue";
 </script>
 
 <template>
-    <TinySqlEditor text="select * from employee;
+    <TinySqlEditor
+        text="select * from employee;
 SELECT * FROM xx;
 select * from employee;
 select * from employee; -- comment
@@ -23,7 +24,8 @@ CREATE TABLE `user_accounts` (
   UNIQUE INDEX idx_user_mobile(`mobile`)
 )
 -- this is comment
-    " />
+"
+    />
 </template>
 
 <style>
