@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
 
 const props = defineProps<{
-    xIndex: number,
-    yIndex: number,
+    top: number,
+    left: number,
 }>()
 
-const top = computed(() => props.yIndex + "rem")
-const left = computed(() => (props.xIndex * 9.63333333) + 36 + "px")
+// const top = computed(() => props.yIndex + "rem")
+// const left = computed(() => (props.xIndex * 9.63333333) + 36 + "px")
 
 </script>
 
 <template>
-    <div :style="{ top: top, left: left }" class="cursor absolute h-4 bg-black"></div>
+    <div :style="{ top: top + 'rem', left: left + 'px' }" class="cursor absolute h-4 bg-black"></div>
 </template>
 
 <style scoped>

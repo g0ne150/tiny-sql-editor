@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 
 import { computed, ComputedRef } from "@vue/reactivity";
 import { Token, tokenize, classNameMap } from "./Tokenize";
@@ -8,19 +8,6 @@ interface ICharView extends Token {
     yIndex: number
 }
 
-const charViewCreator = (targetList: ICharView[], token: Token, char: string, yIdx: number, curXIdx: number): number => {
-    targetList.push({
-        char: char,
-        xIndex: curXIdx,
-        yIndex: yIdx,
-        ...token
-    })
-    return curXIdx + 1
-}
-
-</script>
-<script setup lang="ts">
-
 const props = defineProps<{
     text: string
     yIndex: number
@@ -28,32 +15,39 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: 'onChange', value: string): void
-    (e: 'onCursorPositionChange', value: { xIndex: number, yIndex: number }): void
+    (e: 'onCursorPositionChange', value: { xIndex: number, yIndex: number, leftOffset: number }): void
 }>()
 
 const charViews: ComputedRef<ICharView[]> = computed(() => {
     const res: ICharView[] = []
     let xIdx = 0;
     const tokens = tokenize(props.text)
-    tokens.forEach((token, index) => {
+    tokens.forEach(token => {
         token.text.split("").forEach(char => {
-            xIdx = charViewCreator(res, token, char, props.yIndex, xIdx)
+            res.push({
+                ...token,
+                char,
+                xIndex: xIdx,
+                yIndex: props.yIndex
+            })
+            xIdx++
         })
     })
     return res;
 })
 
-const onLineClick = (e: any) => {
-    let xIdx = e.target?.getAttribute("data-x-index")
-    xIdx = xIdx === null ? xIdx = charViews.value.length : parseInt(xIdx)
-    emits('onCursorPositionChange', { yIndex: props.yIndex, xIndex: xIdx })
+const onLineClick = (e: MouseEvent) => {
+    const clickTarget = e.target as HTMLElement
+    let xIdxStr = clickTarget.getAttribute("data-x-index")
+    const xIdx = xIdxStr === null ? charViews.value.length : parseInt(xIdxStr)
+    emits('onCursorPositionChange', { yIndex: props.yIndex, xIndex: xIdx, leftOffset: clickTarget.offsetLeft })
 }
 </script>
 
 
 
 <template>
-    <div class="line-view whitespace-nowrap" @click="onLineClick">
+    <div class="line-view whitespace-nowrap pr-4" @click="onLineClick">
         <span
             class="line-number border-r border-gray-800 mr-1 pr-1 text-right inline-block cursor-default select-none"
         >{{ yIndex + 1 }}</span>
@@ -68,6 +62,10 @@ const onLineClick = (e: any) => {
 <style scoped>
 .line-view {
     line-height: 100%;
+    display: table;
+}
+.line-view span {
+    /* display: inline-flex; */
 }
 .line-number {
     min-width: 2rem;

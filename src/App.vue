@@ -11,6 +11,11 @@ import TinySqlEditor from "./components/TinySqlEditor/TinySqlEditor.vue";
 SELECT * FROM xx;
 select * from employee;
 select * from employee; -- comment
+select * from employee; -- comment
+select * from employee; -- comment
+select * from employee; -- comment
+select * from employee;
+select * from employee;
 select * from employee;
 INSERT INTO `charger` (`id`,`type`,`create_at`,`update_at`) VALUES (3,2,'2017-05-18 11:06:17','2017-05-18 11:06:17') ON DUPLICATE KEY UPDATE `id`=VALUES(`id`), `type`=VALUES(`type`), `update_at`=VALUES(`update_at`);
 CREATE TABLE `user_accounts` (
@@ -23,6 +28,10 @@ CREATE TABLE `user_accounts` (
   -- 创建唯一索引，不允许重复
   UNIQUE INDEX idx_user_mobile(`mobile`)
 )
+-- this is comment
+-- this is comment
+-- this is comment
+-- this is comment
 -- this is comment
 "
     />
