@@ -39,8 +39,18 @@ const charViews: ComputedRef<ICharView[]> = computed(() => {
 const onLineClick = (e: MouseEvent) => {
     const clickTarget = e.target as HTMLElement
     let xIdxStr = clickTarget.getAttribute("data-x-index")
-    const xIdx = xIdxStr === null ? charViews.value.length : parseInt(xIdxStr)
-    emits('onCursorPositionChange', { yIndex: props.yIndex, xIndex: xIdx, leftOffset: clickTarget.offsetLeft })
+    const emitValue = { yIndex: props.yIndex, xIndex: 0, leftOffset: 0 }
+    if (xIdxStr) {
+        emitValue.xIndex = parseInt(xIdxStr)
+        emitValue.leftOffset = clickTarget.offsetLeft
+    } else {
+        emitValue.xIndex = charViews.value.length
+        const lastEl = clickTarget.lastElementChild as HTMLElement
+        if (lastEl?.getAttribute("data-x-index")) {
+            emitValue.leftOffset = lastEl.offsetLeft + lastEl.offsetWidth
+        }
+    }
+    emits('onCursorPositionChange', emitValue)
 }
 </script>
 
@@ -62,10 +72,8 @@ const onLineClick = (e: MouseEvent) => {
 <style scoped>
 .line-view {
     line-height: 100%;
+    /* FIXME 撑大容器方式不完美 */
     display: table;
-}
-.line-view span {
-    /* display: inline-flex; */
 }
 .line-number {
     min-width: 2rem;

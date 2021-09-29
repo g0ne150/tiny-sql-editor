@@ -5,14 +5,20 @@ const props = defineProps<{
     left: number,
 }>()
 
-// const top = computed(() => props.yIndex + "rem")
-// const left = computed(() => (props.xIndex * 9.63333333) + 36 + "px")
-
 </script>
 
 <template>
     <div :style="{ top: top + 'rem', left: left + 'px' }" class="cursor absolute h-4 bg-black"></div>
 </template>
+
+<style>
+.cursor {
+    opacity: 0;
+}
+.line-wrap:focus .cursor {
+    opacity: 1;
+}
+</style>
 
 <style scoped>
 .cursor {
