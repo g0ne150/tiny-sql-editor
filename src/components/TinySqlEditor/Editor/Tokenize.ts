@@ -97,19 +97,19 @@ const tokenizeComments: (sql: string) => Token[] = (sql: string) => {
  */
 const tokenizeWithoutComments: (sql: string) => Token[] = (sql: string) => {
     const tokens: string[] = []
-    const chars = [...sql]
-    chars.length &&
-        chars.reduce((tokenTaxt, v) => {
-            const isTextBlank = /^\s*$/.test(tokenTaxt)
-            const isVBlank = v === " "
-            if ((isTextBlank && isVBlank) || (!isTextBlank && !isVBlank)) {
-                return tokenTaxt + v
-            } else {
-                tokens.push(tokenTaxt)
-                return v
-            }
-        })
 
+    let curToken = ""
+    for (const c of [...sql]) {
+        const isTextBlank = /^\s*$/.test(curToken)
+        const isVBlank = c === " "
+        if ((isTextBlank && isVBlank) || (!isTextBlank && !isVBlank)) {
+            curToken += c
+        } else {
+            tokens.push(curToken)
+            curToken = c
+        }
+    }
+    tokens.push(curToken)
     return tokens.map((word) => {
         for (const rule of rules) {
             if (rule.match.test(word)) {
