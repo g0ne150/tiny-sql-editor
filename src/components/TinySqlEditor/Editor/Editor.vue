@@ -60,6 +60,9 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
 
 }
 
+/**
+ * 中文输入时，每次 composition 输入，content 需要用 offset 去掉上次 composition 的内容
+ */
 const insertContent = (content: string, offset: number = 0) => {
     const editingLine = lines.value[curYIndex.value]
     lines.value[curYIndex.value] =

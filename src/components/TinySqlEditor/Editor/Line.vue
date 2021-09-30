@@ -39,7 +39,7 @@ const charViews: ComputedRef<ICharView[]> = computed(() => {
 const onLineClick = (e: MouseEvent) => {
     const clickTarget = e.target as HTMLElement
     let xIdxStr = clickTarget.getAttribute("data-x-index")
-    const emitValue = { yIndex: props.yIndex, xIndex: 0, leftOffset: 0 }
+    const emitValue = { yIndex: props.yIndex, xIndex: 0, leftOffset: 36 }
     if (xIdxStr) {
         emitValue.xIndex = parseInt(xIdxStr)
         emitValue.leftOffset = clickTarget.offsetLeft
