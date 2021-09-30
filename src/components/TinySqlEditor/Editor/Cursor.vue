@@ -13,6 +13,15 @@ const emits = defineEmits<{
 
 const inputRef = ref<HTMLInputElement>()
 
+const resetInput = () => {
+    // Reset real input caret position for delete backward and forward
+    if (inputRef.value) {
+        inputRef.value.value = "  "
+        inputRef.value.selectionStart = 1
+        inputRef.value.selectionEnd = 1
+    }
+}
+
 const onInput = (e: InputEvent | Event) => {
     if (e instanceof InputEvent) {
         emits("onInput", { data: e.data, inputType: InputType[e.inputType as InputTypeKey] })
@@ -20,6 +29,7 @@ const onInput = (e: InputEvent | Event) => {
 }
 
 const onFocus = (e: FocusEvent) => {
+    resetInput()
     inputRef.value?.focus()
 }
 
@@ -40,6 +50,7 @@ export type InputEventValue = {
         :style="{ top: top + 'rem', left: left + 'px' }"
         ref="inputRef"
         type="text"
+        :value="'  '"
         @input="onInput"
         @compositionstart="e => $emit('onInput', { data: e.data, inputType: InputType.compositionStart })"
         @compositionupdate="e => $emit('onInput', { data: e.data, inputType: InputType.compositionupdate })"

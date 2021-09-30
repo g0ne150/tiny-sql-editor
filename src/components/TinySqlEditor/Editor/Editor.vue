@@ -37,20 +37,27 @@ onMounted(() => {
 let latestInput: string = ""
 let latestInputType: InputType | null = null
 const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
-    if (!data) {
-        return
-    }
     switch (inputType) {
         case InputType.insertText:
-            insertContent(data)
+            data && editingContent(data)
             break
+        case InputType.deleteContentBackward:
+            editingContent('', { forward: 0, backward: 1 })
+            break;
+        case InputType.deleteContentForward:
+            editingContent('', { forward: 1, backward: 0 })
+            break;
 
-        case InputType.insertCompositionText:
-            break
+        /**
+         * For chinese input
+         * 中文输入时，每次 composition 输入，content 需要用 offset 向后去掉上次 composition 的内容
+         */
+        // case InputType.insertCompositionText:
+        //     break
         // case InputType.compositionStart:
         case InputType.compositionupdate:
-            insertContent(data, latestInput.length)
-            latestInput = data
+            data && editingContent(data, { forward: 0, backward: latestInput.length })
+            latestInput = data || ""
             latestInputType = inputType
             break
         case InputType.compositionEnd:
@@ -60,16 +67,15 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
 
 }
 
-/**
- * 中文输入时，每次 composition 输入，content 需要用 offset 去掉上次 composition 的内容
- */
-const insertContent = (content: string, offset: number = 0) => {
+
+const editingContent = (content: string, offset = { forward: 0, backward: 0 }) => {
     const editingLine = lines.value[curYIndex.value]
     lines.value[curYIndex.value] =
-        editingLine.substring(0, curXIndex.value - offset) +
+        editingLine.substring(0, curXIndex.value - offset.backward) +
         content +
-        editingLine.substring(curXIndex.value, editingLine.length)
-    curXIndex.value += content.length - offset
+        editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
+    curXIndex.value += (content.length - offset.backward + offset.forward)
+    console.log(lines.value[curYIndex.value], curXIndex.value)
 }
 
 </script>
@@ -88,6 +94,7 @@ const insertContent = (content: string, offset: number = 0) => {
                     }"
                 />
                 <!-- FIXME 输入时光标未偏移 -->
+                <!-- TODO 重构光标定位实现 -->
                 <Cursor ref="cursorRef" :left="left" :top="curYIndex" @on-input="onInput" />
             </div>
         </div>
