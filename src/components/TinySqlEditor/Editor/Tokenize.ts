@@ -7,7 +7,7 @@ import {
     RESERVED_FUNCTIONS,
     POSSIBLE_WITHOUT_PARENS,
     COMBOS,
-} from "./sql"
+} from "./Sql"
 
 export enum TokenType {
     LITERALS,

@@ -1,23 +1,61 @@
 <script setup lang="ts">
+import { ref } from "@vue/reactivity";
+import { InputType, InputTypeKey } from "./InputType";
 
-const props = defineProps<{
+defineProps<{
     top: number,
     left: number,
 }>()
 
+const emits = defineEmits<{
+    (e: "onInput", value: InputEventValue): void,
+}>()
+
+const inputRef = ref<HTMLInputElement>()
+
+const onInput = (
+    e: InputEvent | CompositionEvent | Event,
+    options: { isCompositionend: boolean } = { isCompositionend: false }
+) => {
+    console.log(e)
+    if (e instanceof InputEvent) {
+        emits("onInput", { data: e.data, inputType: InputType[e.inputType as InputTypeKey] })
+    } else if (e instanceof CompositionEvent && options.isCompositionend) {
+        emits("onInput", { data: e.data, inputType: InputType.compositionEnd })
+    }
+
+    // inputRef.value && (inputRef.value.value = "")
+}
+
+const onFocus = (e: FocusEvent) => {
+    inputRef.value?.focus()
+}
+
+defineExpose({
+    onFocus
+})
+</script>
+
+<script lang="ts">
+export type InputEventValue = {
+    inputType: InputType,
+    data: string | null,
+}
 </script>
 
 <template>
-    <div :style="{ top: top + 'rem', left: left + 'px' }" class="cursor absolute h-4 bg-black"></div>
+    <input
+        :style="{ top: top + 'rem', left: left + 'px' }"
+        ref="inputRef"
+        type="text"
+        @input="onInput"
+        @compositionend="e => onInput(e, { isCompositionend: true })"
+        class="cursor absolute h-4 bg-black outline-none caret-transparents block"
+    />
 </template>
 
 <style>
-.cursor {
-    opacity: 0;
-}
-.line-wrap:focus .cursor {
-    opacity: 1;
-}
+/* TODO Hide cursor when focus is lost */
 </style>
 
 <style scoped>
