@@ -7,7 +7,8 @@ import TinySqlEditor from "./components/TinySqlEditor/TinySqlEditor.vue";
 
 <template>
     <TinySqlEditor
-        text="select * from employee;
+        text=" -- 支持中文
+select * from employee;
 SELECT * FROM xx;
 select * from employee;
 select * from employee; -- comment

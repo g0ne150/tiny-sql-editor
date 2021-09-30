@@ -193,6 +193,8 @@ export enum InputType {
      * For composition input, for Chinese input
      */
     compositionEnd = "compositionEnd",
+    compositionStart = "compositionStart",
+    compositionupdate = "compositionupdate",
 }
 
 export type InputTypeKey = keyof typeof InputType

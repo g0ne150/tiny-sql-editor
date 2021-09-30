@@ -13,18 +13,10 @@ const emits = defineEmits<{
 
 const inputRef = ref<HTMLInputElement>()
 
-const onInput = (
-    e: InputEvent | CompositionEvent | Event,
-    options: { isCompositionend: boolean } = { isCompositionend: false }
-) => {
-    console.log(e)
+const onInput = (e: InputEvent | Event) => {
     if (e instanceof InputEvent) {
         emits("onInput", { data: e.data, inputType: InputType[e.inputType as InputTypeKey] })
-    } else if (e instanceof CompositionEvent && options.isCompositionend) {
-        emits("onInput", { data: e.data, inputType: InputType.compositionEnd })
     }
-
-    // inputRef.value && (inputRef.value.value = "")
 }
 
 const onFocus = (e: FocusEvent) => {
@@ -49,7 +41,9 @@ export type InputEventValue = {
         ref="inputRef"
         type="text"
         @input="onInput"
-        @compositionend="e => onInput(e, { isCompositionend: true })"
+        @compositionstart="e => $emit('onInput', { data: e.data, inputType: InputType.compositionStart })"
+        @compositionupdate="e => $emit('onInput', { data: e.data, inputType: InputType.compositionupdate })"
+        @compositionend="e => $emit('onInput', { data: e.data, inputType: InputType.compositionEnd })"
         class="cursor absolute h-4 bg-black outline-none caret-transparents block"
     />
 </template>
