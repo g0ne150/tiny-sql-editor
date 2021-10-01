@@ -49,11 +49,12 @@ const onLineClick = (e: MouseEvent) => {
 }
 
 const getCaretLeftOffset: (curXIdx: number) => number = (curXIdx: number) => {
-    const charLen = charRefs.value.length
+    const charLen = charViews.value.length
     if (curXIdx >= charLen) {
         const lastEl = charRefs.value[charLen - 1]
-        if (lastEl)
+        if (lastEl) {
             return lastEl.offsetLeft + lastEl.offsetWidth
+        }
     }
     const targetChar = charRefs.value[curXIdx]
     if (targetChar) {

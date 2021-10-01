@@ -44,7 +44,6 @@ onMounted(() => {
 let latestInput: string = ""
 let latestInputType: InputType | null = null
 const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
-    console.log(data, inputType)
     // TODO support new line insert
     switch (inputType) {
         case InputType.insertText:
