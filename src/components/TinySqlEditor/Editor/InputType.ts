@@ -190,11 +190,15 @@ export enum InputType {
     // ---------------- Down below is custom defined, non w3c standard ----------------
 
     /**
-     * For composition input, for Chinese input
+     * For composition input, for input method support
      */
     compositionEnd = "compositionEnd",
     compositionStart = "compositionStart",
     compositionupdate = "compositionupdate",
+
+    // new line insert input action
+    newLineInsertBelow = "newLineInsertBelow",
+    newLineInsertAbove = "newLineInsertAbove",
 }
 
 export type InputTypeKey = keyof typeof InputType

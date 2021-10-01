@@ -37,6 +37,8 @@ onMounted(() => {
 let latestInput: string = ""
 let latestInputType: InputType | null = null
 const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
+    console.log(data, inputType)
+    // TODO support new line insert
     switch (inputType) {
         case InputType.insertText:
             data && editingContent(data)
@@ -52,22 +54,25 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
          * For chinese input
          * 中文输入时，每次 composition 输入，content 需要用 offset 向后去掉上次 composition 的内容
          */
-        // case InputType.insertCompositionText:
-        //     break
         // case InputType.compositionStart:
+        case InputType.insertCompositionText:
         case InputType.compositionupdate:
+        case InputType.compositionEnd:
             data && editingContent(data, { forward: 0, backward: latestInput.length })
             latestInput = data || ""
             latestInputType = inputType
-            break
-        case InputType.compositionEnd:
-            latestInput = ""
+            if (inputType === InputType.compositionEnd)
+                latestInput = ""
             break
     }
 
 }
 
 
+/**
+ * Insert content into current caret position.
+ * With offset means slice string forward or backward from current caret position
+ */
 const editingContent = (content: string, offset = { forward: 0, backward: 0 }) => {
     const editingLine = lines.value[curYIndex.value]
     lines.value[curYIndex.value] =
@@ -75,7 +80,6 @@ const editingContent = (content: string, offset = { forward: 0, backward: 0 }) =
         content +
         editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
     curXIndex.value += (content.length - offset.backward + offset.forward)
-    console.log(lines.value[curYIndex.value], curXIndex.value)
 }
 
 </script>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
+import { debounce } from "lodash";
 import { InputType, InputTypeKey } from "./InputType";
 
 defineProps<{
@@ -13,23 +14,36 @@ const emits = defineEmits<{
 
 const inputRef = ref<HTMLInputElement>()
 
-const resetInput = () => {
-    // Reset real input caret position for delete backward and forward
-    if (inputRef.value) {
-        inputRef.value.value = "  "
-        inputRef.value.selectionStart = 1
-        inputRef.value.selectionEnd = 1
+const onInput = (e: InputEvent | CompositionEvent | KeyboardEvent | Event, inputType?: InputType) => {
+    console.log(e)
+    // Replace deleteContentBackward and deleteContentForward in input events with keyDown events
+    if (e instanceof KeyboardEvent) {
+        if (e.code === "Delete")
+            debouncedOnInputEmit(null, InputType.deleteContentForward)
+        if (e.code === "Backspace")
+            debouncedOnInputEmit(null, InputType.deleteContentBackward)
+        if (e.code === "Enter")
+            debouncedOnInputEmit(null, InputType.newLineInsertBelow)
+        return
+    }
+
+    if (e instanceof CompositionEvent) {
+        debouncedOnInputEmit(e.data, inputType)
+        return
+    }
+
+    if (e instanceof InputEvent) {
+        debouncedOnInputEmit(e.data, InputType[e.inputType as InputTypeKey])
+        return
     }
 }
 
-const onInput = (e: InputEvent | Event) => {
-    if (e instanceof InputEvent) {
-        emits("onInput", { data: e.data, inputType: InputType[e.inputType as InputTypeKey] })
-    }
-}
+const debouncedOnInputEmit = debounce((data: string | null, inputType?: InputType) => {
+    emits("onInput", { data, inputType })
+})
 
 const onFocus = (e: FocusEvent) => {
-    resetInput()
+    // resetInput()
     inputRef.value?.focus()
 }
 
@@ -40,7 +54,7 @@ defineExpose({
 
 <script lang="ts">
 export type InputEventValue = {
-    inputType: InputType,
+    inputType?: InputType,
     data: string | null,
 }
 </script>
@@ -50,11 +64,11 @@ export type InputEventValue = {
         :style="{ top: top + 'rem', left: left + 'px' }"
         ref="inputRef"
         type="text"
-        :value="'  '"
+        @keydown="onInput"
         @input="onInput"
-        @compositionstart="e => $emit('onInput', { data: e.data, inputType: InputType.compositionStart })"
-        @compositionupdate="e => $emit('onInput', { data: e.data, inputType: InputType.compositionupdate })"
-        @compositionend="e => $emit('onInput', { data: e.data, inputType: InputType.compositionEnd })"
+        @compositionstart="e => onInput(e, InputType.compositionStart)"
+        @compositionupdate="e => onInput(e, InputType.compositionupdate)"
+        @compositionend="e => onInput(e, InputType.compositionEnd)"
         class="cursor absolute h-4 bg-black outline-none caret-transparents block"
     />
 </template>
