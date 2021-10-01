@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, reactive, ComponentPublicInstance } from "vue";
 import Line from "./Line.vue";
 import Cursor, { InputEventValue } from "./Cursor.vue";
 import { InputType } from "./InputType";
@@ -12,19 +12,26 @@ const emits = defineEmits<
     (e: "onChange", text: string) => void
 >()
 
+const cursorRef = ref<ComponentPublicInstance<typeof Cursor>>()
+const lineRef = ref<ComponentPublicInstance<typeof Line>[]>([])
+
 // const lines = computed(() => props.text ? props.text.split('\n') : [])
-let lines = ref(props.text ? props.text.split('\n') : [])
+let lines = reactive(props.text ? props.text.split('\n') : [])
 
 const curYIndex = ref(0)
 const curXIndex = ref(0)
-const left = ref(36)
+const left = computed(() => {
+    const targetLine = lineRef.value[curYIndex.value]
+    if (targetLine) {
+        return targetLine.getCaretLeftOffset(curXIndex.value)
+    }
+    return 36
+})
 
 const onCurserCoordinateChange = (x: number, y: number) => {
     curXIndex.value = x
     curYIndex.value = y
 }
-
-const cursorRef = ref<typeof Line>()
 
 const onEditorFocus = (e?: Event) => {
     cursorRef.value?.onFocus()
@@ -54,7 +61,7 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
          * For chinese input
          * 中文输入时，每次 composition 输入，content 需要用 offset 向后去掉上次 composition 的内容
          */
-        // case InputType.compositionStart:
+        case InputType.compositionStart:
         case InputType.insertCompositionText:
         case InputType.compositionupdate:
         case InputType.compositionEnd:
@@ -74,8 +81,8 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
  * With offset means slice string forward or backward from current caret position
  */
 const editingContent = (content: string, offset = { forward: 0, backward: 0 }) => {
-    const editingLine = lines.value[curYIndex.value]
-    lines.value[curYIndex.value] =
+    const editingLine = lines[curYIndex.value]
+    lines[curYIndex.value] =
         editingLine.substring(0, curXIndex.value - offset.backward) +
         content +
         editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
@@ -90,15 +97,11 @@ const editingContent = (content: string, offset = { forward: 0, backward: 0 }) =
             <div class="line-wrap relative cursor-text font-mono min-h-full" @click="onEditorFocus">
                 <Line
                     v-for="(line, index) in lines"
+                    :ref="el => { if (el) lineRef[index] = el as any }"
                     :text="line"
                     :y-index="index"
-                    @on-cursor-position-change="({ xIndex, yIndex, leftOffset }) => {
-                        onCurserCoordinateChange(xIndex, yIndex)
-                        left = leftOffset
-                    }"
+                    @on-cursor-position-change="({ xIndex, yIndex }) => onCurserCoordinateChange(xIndex, yIndex)"
                 />
-                <!-- FIXME 输入时光标未偏移 -->
-                <!-- TODO 重构光标定位实现 -->
                 <Cursor ref="cursorRef" :left="left" :top="curYIndex" @on-input="onInput" />
             </div>
         </div>

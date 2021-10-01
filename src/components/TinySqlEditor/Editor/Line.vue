@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { computed, ComputedRef } from "@vue/reactivity";
+import { ref } from "vue";
 import { Token, tokenize, classNameMap } from "./Tokenize";
 interface ICharView extends Token {
     char: string
@@ -15,8 +16,10 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: 'onChange', value: string): void
-    (e: 'onCursorPositionChange', value: { xIndex: number, yIndex: number, leftOffset: number }): void
+    (e: 'onCursorPositionChange', value: { xIndex: number, yIndex: number }): void
 }>()
+
+const charRefs = ref<HTMLSpanElement[]>([])
 
 const charViews: ComputedRef<ICharView[]> = computed(() => {
     const res: ICharView[] = []
@@ -39,19 +42,29 @@ const charViews: ComputedRef<ICharView[]> = computed(() => {
 const onLineClick = (e: MouseEvent) => {
     const clickTarget = e.target as HTMLElement
     let xIdxStr = clickTarget.getAttribute("data-x-index")
-    const emitValue = { yIndex: props.yIndex, xIndex: 0, leftOffset: 36 }
-    if (xIdxStr) {
-        emitValue.xIndex = parseInt(xIdxStr)
-        emitValue.leftOffset = clickTarget.offsetLeft
-    } else {
-        emitValue.xIndex = charViews.value.length
-        const lastEl = clickTarget.lastElementChild as HTMLElement
-        if (lastEl?.getAttribute("data-x-index")) {
-            emitValue.leftOffset = lastEl.offsetLeft + lastEl.offsetWidth
-        }
-    }
-    emits('onCursorPositionChange', emitValue)
+    emits('onCursorPositionChange', {
+        yIndex: props.yIndex,
+        xIndex: xIdxStr ? parseInt(xIdxStr) : charViews.value.length,
+    })
 }
+
+const getCaretLeftOffset: (curXIdx: number) => number = (curXIdx: number) => {
+    const charLen = charRefs.value.length
+    if (curXIdx >= charLen) {
+        const lastEl = charRefs.value[charLen - 1]
+        if (lastEl)
+            return lastEl.offsetLeft + lastEl.offsetWidth
+    }
+    const targetChar = charRefs.value[curXIdx]
+    if (targetChar) {
+        return targetChar.offsetLeft
+    }
+    return 36
+}
+
+defineExpose({
+    getCaretLeftOffset: getCaretLeftOffset
+})
 </script>
 
 
@@ -62,7 +75,8 @@ const onLineClick = (e: MouseEvent) => {
             class="line-number border-r border-gray-800 mr-1 pr-1 text-right inline-block cursor-default select-none"
         >{{ yIndex + 1 }}</span>
         <span
-            v-for="cv in charViews"
+            v-for="(cv, i) in charViews"
+            :ref="el => { if (el) charRefs[i] = el as HTMLSpanElement }"
             :data-x-index="cv.xIndex"
             :class="classNameMap.get(cv.type)"
         >{{ cv.char === ' ' ? '&nbsp;' : cv.char }}</span>
