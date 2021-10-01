@@ -79,7 +79,7 @@ const editingContent = (content: string, offset = { forward: 0, backward: 0 }) =
         editingLine.substring(0, curXIndex.value - offset.backward) +
         content +
         editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
-    curXIndex.value += (content.length - offset.backward + offset.forward)
+    curXIndex.value += (content.length - offset.backward)
 }
 
 </script>

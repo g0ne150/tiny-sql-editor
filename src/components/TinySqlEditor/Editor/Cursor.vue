@@ -15,7 +15,6 @@ const emits = defineEmits<{
 const inputRef = ref<HTMLInputElement>()
 
 const onInput = (e: InputEvent | CompositionEvent | KeyboardEvent | Event, inputType?: InputType) => {
-    console.log(e)
     // Replace deleteContentBackward and deleteContentForward in input events with keyDown events
     if (e instanceof KeyboardEvent) {
         if (e.code === "Delete")
