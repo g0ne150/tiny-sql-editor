@@ -9,7 +9,7 @@ const props = defineProps<{ text?: string }>()
 <template>
     <div class="container mx-auto">
         <Editor :text="props.text" />
-        <input class="" type="button" value="查询" />
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Excute</button>
         <ResultTable />
     </div>
 </template>

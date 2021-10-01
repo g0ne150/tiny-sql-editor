@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { computed, ComputedRef } from "@vue/reactivity";
+import { debounce, DebouncedFunc } from "lodash";
 import { ref } from "vue";
 import { Token, tokenize, classNameMap } from "./Tokenize";
 interface ICharView extends Token {
@@ -16,7 +17,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: 'onChange', value: string): void
-    (e: 'onCursorPositionChange', value: { xIndex: number, yIndex: number }): void
+    (e: 'onCaretPositionChange', value: { xIndex: number, yIndex: number }): void
 }>()
 
 const charRefs = ref<HTMLSpanElement[]>([])
@@ -42,7 +43,7 @@ const charViews: ComputedRef<ICharView[]> = computed(() => {
 const onLineClick = (e: MouseEvent) => {
     const clickTarget = e.target as HTMLElement
     let xIdxStr = clickTarget.getAttribute("data-x-index")
-    emits('onCursorPositionChange', {
+    emits('onCaretPositionChange', {
         yIndex: props.yIndex,
         xIndex: xIdxStr ? parseInt(xIdxStr) : charViews.value.length,
     })
@@ -60,7 +61,8 @@ const getCaretLeftOffset: (curXIdx: number) => number = (curXIdx: number) => {
     if (targetChar) {
         return targetChar.offsetLeft
     }
-    return 36
+
+    return 0
 }
 
 defineExpose({

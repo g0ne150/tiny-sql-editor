@@ -59,7 +59,7 @@ export type InputEventValue = {
 
 <template>
     <input
-        :style="{ top: top + 'rem', left: left + 'px' }"
+        :style="{ top: top + 'rem', left: (left < 36 ? 36 : left) + 'px' }"
         ref="inputRef"
         type="text"
         @keydown="onInput"
@@ -67,23 +67,23 @@ export type InputEventValue = {
         @compositionstart="e => onInput(e, InputType.compositionStart)"
         @compositionupdate="e => onInput(e, InputType.compositionupdate)"
         @compositionend="e => onInput(e, InputType.compositionEnd)"
-        class="cursor absolute h-4 bg-black outline-none caret-transparents block"
+        class="caret absolute h-4 bg-black outline-none caret-transparents block"
     />
 </template>
 
 <style>
-/* TODO Hide cursor when focus is lost */
+/* TODO Hide caret when focus is lost */
 </style>
 
 <style scoped>
-.cursor {
+.caret {
     width: 1px;
     top: 0;
     left: 35px;
-    animation: 0.5s linear infinite cursor-blink;
+    animation: 0.5s linear infinite caret-blink;
 }
 
-@keyframes cursor-blink {
+@keyframes caret-blink {
     from {
         opacity: 1;
     }
