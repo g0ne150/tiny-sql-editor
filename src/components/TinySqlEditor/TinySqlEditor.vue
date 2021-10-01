@@ -7,8 +7,11 @@ const props = defineProps<{ text?: string }>()
 </script>
 
 <template>
-    <Editor :text="props.text" />
-    <ResultTable />
+    <div class="container mx-auto">
+        <Editor :text="props.text" />
+        <input class="" type="button" value="查询" />
+        <ResultTable />
+    </div>
 </template>
 
 <style scoped>

@@ -64,7 +64,7 @@ const getCaretLeftOffset: (curXIdx: number) => number = (curXIdx: number) => {
 }
 
 defineExpose({
-    getCaretLeftOffset: getCaretLeftOffset
+    getCaretLeftOffset
 })
 </script>
 

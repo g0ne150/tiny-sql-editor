@@ -18,9 +18,10 @@ const lineRef = ref<ComponentPublicInstance<typeof Line>[]>([])
 // const lines = computed(() => props.text ? props.text.split('\n') : [])
 let lines = reactive(props.text ? props.text.split('\n') : [])
 
-const curYIndex = ref(0)
 const curXIndex = ref(0)
+const curYIndex = ref(0)
 const left = computed(() => {
+    console.log(curXIndex.value, curYIndex.value)
     const targetLine = lineRef.value[curYIndex.value]
     if (targetLine) {
         return targetLine.getCaretLeftOffset(curXIndex.value)
@@ -29,8 +30,8 @@ const left = computed(() => {
 })
 
 const onCurserCoordinateChange = (x: number, y: number) => {
-    curXIndex.value = x
-    curYIndex.value = y
+    curXIndex.value = x < 0 ? 0 : x;
+    curYIndex.value = y < 0 ? 0 : y
 }
 
 const onEditorFocus = (e?: Event) => {
@@ -79,13 +80,14 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
  * Insert content into current caret position.
  * With offset means slice string forward or backward from current caret position
  */
+// TODO support mulitple line editing
 const editingContent = (content: string, offset = { forward: 0, backward: 0 }) => {
     const editingLine = lines[curYIndex.value]
     lines[curYIndex.value] =
         editingLine.substring(0, curXIndex.value - offset.backward) +
         content +
         editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
-    curXIndex.value += (content.length - offset.backward)
+    onCurserCoordinateChange(curXIndex.value + content.length - offset.backward, curYIndex.value)
 }
 
 </script>

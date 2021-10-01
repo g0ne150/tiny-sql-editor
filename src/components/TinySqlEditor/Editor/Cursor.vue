@@ -42,7 +42,6 @@ const debouncedOnInputEmit = debounce((data: string | null, inputType?: InputTyp
 })
 
 const onFocus = (e: FocusEvent) => {
-    // resetInput()
     inputRef.value?.focus()
 }
 
