@@ -4,20 +4,19 @@ import { computed, ref, onMounted, reactive, ComponentPublicInstance } from "vue
 import Line from "./Line.vue";
 import Caret, { InputEventValue } from "./Caret.vue";
 import { InputType } from "./InputType";
-import { debounce } from "lodash";
 
 
-const props = defineProps<{ text?: string }>()
+const props = defineProps<{ modelValue: string }>()
 
-const emits = defineEmits<
-    (e: "onChange", text: string) => void
->()
+const emits = defineEmits<{
+    (e: "update:modelValue", value: string): void
+}>()
 
 const caretRef = ref<ComponentPublicInstance<typeof Caret>>()
 const lineRef = ref<ComponentPublicInstance<typeof Line>[]>([])
 
 // const lines = computed(() => props.text ? props.text.split('\n') : [])
-let lines = reactive(props.text ? props.text.split('\n') : [])
+let lines = reactive(props.modelValue ? props.modelValue.split('\n') : [])
 
 const curXIndex = ref(0)
 const curYIndex = ref(0)
@@ -88,6 +87,7 @@ const editingContent = (content: string, offset = { forward: 0, backward: 0 }) =
         content +
         editingLine.substring(curXIndex.value + offset.forward, editingLine.length)
     caretCoordinateChange(curXIndex.value + content.length - offset.backward, curYIndex.value)
+    emits("update:modelValue", lines.join("\n"))
 }
 
 </script>
