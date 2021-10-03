@@ -30,11 +30,13 @@ const left = computed(() => {
 })
 
 const caretCoordinateChange = (x?: number | null, y?: number | null) => {
-    if (isNumber(y) && y >= 0) {
+    if (isNumber(y)) {
+        y < 0 && (y = 0)
         curYIndex.value = y >= lines.length ? lines.length - 1 : y
     }
 
-    if (isNumber(x) && x >= 0) {
+    if (isNumber(x)) {
+        x < 0 && (x = 0)
         curXIndex.value = x > lines[curYIndex.value].length ? lines[curYIndex.value].length : x;
     }
 }
