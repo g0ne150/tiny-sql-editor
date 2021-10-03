@@ -30,3 +30,14 @@
 *** Return executive result
 @endmindmap
 ```
+
+## Assignment Instruction
+
+1. git clone from [https://github.com/g0ne150/tiny-sql-editor](https://github.com/g0ne150/tiny-sql-editor)
+    1. At present, the editor function only supports sql syntax highlighting, single-line editing, input deletion in Chinese and English, move the caret by arrow keys, and currently does not support selecting text, etc.
+2. `npm install`
+3. `npm run dev`
+4. git clone from [https://github.com/g0ne150/tiny-sql-runner](https://github.com/g0ne150/tiny-sql-runner)
+5. Install sqlite, like: `brew install sqlite`
+6. `go get`
+7. `go run main.go`
