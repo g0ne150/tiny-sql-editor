@@ -29,9 +29,14 @@ const left = computed(() => {
     return 0
 })
 
-const caretCoordinateChange = (x: number, y: number) => {
-    curXIndex.value = x < 0 ? 0 : x;
-    curYIndex.value = y < 0 ? 0 : y
+const caretCoordinateChange = (x?: number | null, y?: number | null) => {
+    if (isNumber(y) && y >= 0) {
+        curYIndex.value = y >= lines.length ? lines.length - 1 : y
+    }
+
+    if (isNumber(x) && x >= 0) {
+        curXIndex.value = x > lines[curYIndex.value].length ? lines[curYIndex.value].length : x;
+    }
 }
 
 const onEditorFocus = (e?: Event) => {
@@ -58,16 +63,16 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
             break
 
         case InputType.moveCaretUp:
-            isNumber(data) && (curYIndex.value -= data)
+            isNumber(data) && caretCoordinateChange(null, curYIndex.value - data)
             break
         case InputType.moveCaretForward:
-            isNumber(data) && (curXIndex.value += data)
+            isNumber(data) && caretCoordinateChange(curXIndex.value + data)
             break
         case InputType.moveCaretDown:
-            isNumber(data) && (curYIndex.value += data)
+            isNumber(data) && caretCoordinateChange(null, curYIndex.value + data)
             break
         case InputType.moveCaretBackward:
-            isNumber(data) && (curXIndex.value -= data)
+            isNumber(data) && caretCoordinateChange(curXIndex.value - data)
             break
 
         /**
