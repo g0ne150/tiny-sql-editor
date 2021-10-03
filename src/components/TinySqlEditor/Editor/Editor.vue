@@ -64,7 +64,6 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
             isNumber(data) && (curXIndex.value += data)
             break
         case InputType.moveCaretDown:
-            console.log(data)
             isNumber(data) && (curYIndex.value += data)
             break
         case InputType.moveCaretBackward:
