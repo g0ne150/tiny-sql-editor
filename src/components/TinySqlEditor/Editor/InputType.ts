@@ -199,6 +199,12 @@ export enum InputType {
     // new line insert input action
     newLineInsertBelow = "newLineInsertBelow",
     newLineInsertAbove = "newLineInsertAbove",
+
+    // caret move action
+    moveCaretUp = "moveCaretUp",
+    moveCaretDown = "moveCaretDown",
+    moveCaretForward = "moveCaretForward",
+    moveCaretBackward = "moveCaretBackward",
 }
 
 export type InputTypeKey = keyof typeof InputType

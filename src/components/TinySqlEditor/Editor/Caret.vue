@@ -1,4 +1,12 @@
+<script lang="ts">
+export type InputEventValue = {
+    inputType?: InputType,
+    data: string | number | null,
+}
+</script>
+
 <script setup lang="ts">
+
 import { ref } from "@vue/reactivity";
 import { debounce } from "lodash";
 import { InputType, InputTypeKey } from "./InputType";
@@ -23,6 +31,14 @@ const onInput = (e: InputEvent | CompositionEvent | KeyboardEvent | Event, input
             debouncedOnInputEmit(null, InputType.deleteContentBackward)
         if (e.code === "Enter")
             debouncedOnInputEmit(null, InputType.newLineInsertBelow)
+        if (e.code === "ArrowUp")
+            debouncedOnInputEmit(1, InputType.moveCaretUp)
+        if (e.code === "ArrowRight")
+            debouncedOnInputEmit(1, InputType.moveCaretForward)
+        if (e.code === "ArrowDown")
+            debouncedOnInputEmit(1, InputType.moveCaretDown)
+        if (e.code === "ArrowLeft")
+            debouncedOnInputEmit(1, InputType.moveCaretBackward)
         return
     }
 
@@ -37,7 +53,7 @@ const onInput = (e: InputEvent | CompositionEvent | KeyboardEvent | Event, input
     }
 }
 
-const debouncedOnInputEmit = debounce((data: string | null, inputType?: InputType) => {
+const debouncedOnInputEmit = debounce((data: string | number | null, inputType?: InputType) => {
     emits("onInput", { data, inputType })
 })
 
@@ -48,13 +64,6 @@ const onFocus = (e: FocusEvent) => {
 defineExpose({
     onFocus
 })
-</script>
-
-<script lang="ts">
-export type InputEventValue = {
-    inputType?: InputType,
-    data: string | null,
-}
 </script>
 
 <template>

@@ -4,6 +4,7 @@ import { computed, ref, onMounted, reactive, ComponentPublicInstance } from "vue
 import Line from "./Line.vue";
 import Caret, { InputEventValue } from "./Caret.vue";
 import { InputType } from "./InputType";
+import { isNumber, isString } from "lodash";
 
 
 const props = defineProps<{ modelValue: string }>()
@@ -47,14 +48,28 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
     // TODO support new line insert
     switch (inputType) {
         case InputType.insertText:
-            data && editingContent(data)
+            isString(data) && editingContent(data)
             break
         case InputType.deleteContentBackward:
             editingContent('', { forward: 0, backward: 1 })
-            break;
+            break
         case InputType.deleteContentForward:
             editingContent('', { forward: 1, backward: 0 })
-            break;
+            break
+
+        case InputType.moveCaretUp:
+            isNumber(data) && (curYIndex.value -= data)
+            break
+        case InputType.moveCaretForward:
+            isNumber(data) && (curXIndex.value += data)
+            break
+        case InputType.moveCaretDown:
+            console.log(data)
+            isNumber(data) && (curYIndex.value += data)
+            break
+        case InputType.moveCaretBackward:
+            isNumber(data) && (curXIndex.value -= data)
+            break
 
         /**
          * For chinese input
@@ -64,7 +79,9 @@ const onInput: (v: InputEventValue) => void = ({ data, inputType }) => {
         case InputType.insertCompositionText:
         case InputType.compositionupdate:
         case InputType.compositionEnd:
-            data && editingContent(data, { forward: 0, backward: latestInput.length })
+            if (!isString(data))
+                return
+            editingContent(data, { forward: 0, backward: latestInput.length })
             latestInput = data || ""
             latestInputType = inputType
             if (inputType === InputType.compositionEnd)
